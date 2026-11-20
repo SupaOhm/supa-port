@@ -31,6 +31,8 @@ URL parameters for previews:
 
 ## Build gates
 
+GitHub Actions (`.github/workflows/ci.yml`) runs `npm test` and `npm run build` on every pull request and on pushes to `main`. Vercel's deploy runs only the build, so the tests below are enforced by CI alone.
+
 - `scripts/check-size.mjs` fails the build in two cases:
   - three.js turns up in the entry chunk.
   - The lazily loaded scene chunk is over 220 KB gzipped.
