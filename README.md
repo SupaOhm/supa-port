@@ -34,4 +34,6 @@ The contact chat's questions and answers live in `src/content/chat.ts`.
 
 Vercel's Vite preset works as-is: build command `npm run build`, output directory `dist`.
 
-`VITE_SITE_URL` in `.env` is the live address. `index.html` uses it for the canonical link and the link-preview tags, which need an absolute image URL. Change it if the site is served from another address.
+`VITE_SITE_URL` in `.env` is the live address. `index.html` uses it for the canonical link and the link-preview tags, which need an absolute image URL. The build also uses it for `robots.txt`, `sitemap.xml` and the structured data in `<head>`. Change it if the site is served from another address.
+
+`vercel.json` sets the security headers and caching. Its Content-Security-Policy allows only this origin, with no inline scripts or styles. `npm run preview` sends the same headers, so anything the policy would block shows up there as a console error.

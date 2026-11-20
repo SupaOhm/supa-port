@@ -100,4 +100,13 @@ The Mizuhada screen must show only a mock, a blurred UI or the company logo, nev
 
 ## Deploy
 
-On Vercel with the Vite preset (`npm run build`, output `dist`). `VITE_SITE_URL` in `.env` is the live address. `index.html` uses it for the canonical link and the absolute og:image URL.
+On Vercel with the Vite preset (`npm run build`, output `dist`). `VITE_SITE_URL` in `.env` is the live address. `index.html` uses it for the canonical link and the absolute og:image URL. The `seo` plugin in `vite.config.ts` also uses it at build time, and the build fails without it:
+- It adds the Person JSON-LD (built in `src/content/seo.ts` from the profile and award content) to `<head>`.
+- It writes `robots.txt` and `sitemap.xml` into `dist/`.
+
+`vercel.json` sets the response headers:
+- A strict Content-Security-Policy: only this origin, with no inline scripts or styles and no eval. Setting styles through `element.style` is fine; `<style>` tags, `style=""` in markup and `<script>` without `src` are blocked. Adding a third-party origin (analytics, fonts, embeds) means adding it to the policy.
+- `nosniff`, `X-Frame-Options`, `Referrer-Policy`, `Cross-Origin-Opener-Policy` and `Permissions-Policy`.
+- A year's `immutable` caching for the hashed `/assets/`, and a day for `/fallback/` and `/shots/`, whose filenames do not change.
+
+`npm run preview` sends the same security headers (read from `vercel.json`), so check new features there for policy violations. `npm run dev` does not, because Vite's dev server needs inline scripts. `tests/headers.test.ts` asserts the policy and that `index.html` has no inline scripts or styles.
